@@ -18,5 +18,5 @@ public class ProductResponse {
     private int inventoryQuantity;
     private String description;
     private String categoryName; // Include category name instead of full object
-    private List<ImageResponse> images;
+    private String imageUrl;
 }

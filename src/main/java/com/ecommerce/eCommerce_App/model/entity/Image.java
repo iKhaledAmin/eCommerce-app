@@ -1,5 +1,6 @@
 package com.ecommerce.eCommerce_App.model.entity;
 
+import com.ecommerce.eCommerce_App.model.enums.EntityType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +12,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 
-
 @Entity
 @Table(name = "image")
 public class Image {
@@ -20,16 +20,19 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String fileName;
 
     @Column(nullable = false)
     private String fileType; // e.g., "image/png", "image/jpeg"
 
     @Column(nullable = false, unique = true)
-    private String filePath; // Store image location instead of file content
+    private String storagePath; // The path where the image is stored in the file system or cloud service.
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @Column(nullable = false)
+    private Long entityId; // Stores the ID of the associated entity
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EntityType entityType; // Enum for strict type control
 }

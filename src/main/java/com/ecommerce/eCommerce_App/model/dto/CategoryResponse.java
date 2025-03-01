@@ -12,5 +12,5 @@ public class CategoryResponse {
     private String name;
     private String description;
     private int productsCount;
-    private ImageResponse image;
+    private String imageUrl;
 }

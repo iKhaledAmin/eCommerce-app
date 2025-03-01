@@ -1,19 +1,18 @@
 package com.ecommerce.eCommerce_App.model.mapper;
 
 
-import com.ecommerce.eCommerce_App.model.dto.ImageResponse;
 import com.ecommerce.eCommerce_App.model.entity.Image;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import org.springframework.beans.factory.annotation.Value;
 
 @Mapper(componentModel = "spring")
 public interface ImageMapper {
-    @Mapping(target = "fileUrl", source = "fileName", qualifiedByName = "generateFileUrl")
-    ImageResponse toResponse(Image entity);
 
-    @Named("generateFileUrl")
-    static String generateFileUrl(String fileName) {
-        return "uploads/images/" + fileName;  // Replace with your actual file storage path
+
+    default String toResponse(Image entity) {
+        if (entity == null || entity.getStoragePath() == null) {
+            return null;
+        }
+        return "http://localhost:7070/" + entity.getStoragePath(); // Adjust base URL as needed
     }
 }

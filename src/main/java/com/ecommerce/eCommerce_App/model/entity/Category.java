@@ -27,19 +27,11 @@ public class Category {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String description;
 
     @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
     private int productsCount = 0; // Default value
-
-    @OneToOne(
-            cascade = CascadeType.ALL
-            ,orphanRemoval = true
-            ,fetch = FetchType.EAGER
-    )
-    @JoinColumn(name = "image_id", referencedColumnName = "id", nullable = false)
-    private Image image;
 
     @OneToMany(
             mappedBy = "category"
