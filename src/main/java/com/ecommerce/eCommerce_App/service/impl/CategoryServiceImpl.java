@@ -41,9 +41,9 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponse toResponse(Category category) {
         CategoryResponse response = categoryMapper.toResponse(category);
 
-        Optional<Image> image = imageService.getOptionalByEntityId(category.getId());
+        Optional<Image> image = imageService.getPrimaryImageByEntityIdAndEntityType(category.getId(),EntityType.CATEGORY);
         if (image.isPresent()) {
-            response.setImageUrl(imageService.toResponse(image.get()));
+            response.setImageUrl(imageService.toURL(image.get()));
         }
 
         return response;
@@ -61,42 +61,44 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category add(Category newCategory) {
        throwExceptionIfCategoryNameAlreadyExists(newCategory.getName());
-       return categoryRepo.save(newCategory);
+       return save(newCategory);
     }
 
-    @Transactional
-    @Override
-    public Category add(Category newCategory, MultipartFile image) {
 
+    @Override
+    public Category add(Category newCategory, MultipartFile imageFile) {
         Category savedCategory = add(newCategory);
-        imageService.add(image, savedCategory.getId(), EntityType.CATEGORY);
+        imageService.add(imageFile, savedCategory.getId(), EntityType.CATEGORY);
         return savedCategory;
     }
 
-
     @Override
-    public Category add(CategoryRequest categoryRequest) {
+    @Transactional
+    public Category add(CategoryRequest categoryRequest,MultipartFile imageFile) {
         Category newCategory = toEntity(categoryRequest);
-        return add(newCategory,categoryRequest.getImage());
+        return add(newCategory,imageFile);
     }
     @Override
     public Category update(Long categoryId, Category newCategory) {
         Category existingCategory = getById(categoryId);
+        if (!existingCategory.getName().equals(newCategory.getName())) {
+            throwExceptionIfCategoryNameAlreadyExists(newCategory.getName());
+        }
 
-        // Copy properties from newCategory to existingCategory, excluding the "id", "product", and "image" properties
-        nonNullBeanUtils.copyProperties(newCategory, existingCategory, "id", "product", "image");
+        // Copy properties from newCategory to existingCategory, excluding the "id", "products" properties
+        nonNullBeanUtils.copyProperties(newCategory, existingCategory, "id", "products");
 
         return save(existingCategory);
     }
 
     @Override
-    public Category update(Long categoryId, Category newCategory, MultipartFile image) {
+    public Category update(Long categoryId, Category newCategory, MultipartFile newImageFile) {
 
         Category updatedCategory = update(categoryId, newCategory);
 
-        Optional<Image> existingImage = imageService.getOptionalByEntityId(categoryId);
+        Optional<Image> existingImage = imageService.getOptionalByEntityIdAndEntityType(categoryId,EntityType.CATEGORY);
         if (existingImage.isPresent()) {
-            imageService.update(existingImage.get().getId(), image);
+            imageService.update(existingImage.get().getId(), newImageFile);
         }
 
         return updatedCategory;
@@ -104,9 +106,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public Category update(Long categoryId, CategoryRequest categoryRequest) {
+    public Category update(Long categoryId, CategoryRequest categoryRequest,MultipartFile newImageFile) {
         Category newCategory = toEntity(categoryRequest);
-        return update(categoryId,newCategory,categoryRequest.getImage());
+        return update(categoryId,newCategory,newImageFile);
     }
 
 
@@ -116,7 +118,7 @@ public class CategoryServiceImpl implements CategoryService {
         getById(categoryId);
 
         // Delete image
-        Optional<Image> image = imageService.getOptionalByEntityId(categoryId);
+        Optional<Image> image = imageService.getOptionalByEntityIdAndEntityType(categoryId,EntityType.CATEGORY);
         if (image.isPresent()) {
             imageService.deleteById(image.get().getId());
         }
@@ -151,5 +153,24 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<Category> getAll() {
         return categoryRepo.findAll();
+    }
+
+    @Override
+    @Transactional
+    public void increaseProductsCountByOne(Long categoryId) {
+        if (categoryRepo.existsById(categoryId)) {
+            categoryRepo.increaseProductsCountByOne(categoryId);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void decreaseProductsCountByOne(Long categoryId) {
+        Optional<Category> category = getOptionalById(categoryId);
+        if (category.isPresent()) {
+            if (category.get().getProductsCount() > 0) {
+                categoryRepo.decreaseProductsCountByOne(categoryId);
+            }
+        }
     }
 }

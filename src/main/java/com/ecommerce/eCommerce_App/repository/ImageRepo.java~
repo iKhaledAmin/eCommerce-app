@@ -17,5 +17,4 @@ public interface ImageRepo extends JpaRepository<Image,Long> {
     boolean existsByImageNameAndEntityIdAndEntityType(String imageName, Long entityId, EntityType entityType);
 
 
-    Optional<Image> findByEntityIdAndEntityTypeAndIsPrimary(Long entityId, EntityType entityType, boolean isPrimary);
 }

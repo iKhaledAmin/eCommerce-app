@@ -20,13 +20,13 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String fileName;
+    @Column(nullable = false)
+    private String imageName;
 
     @Column(nullable = false)
-    private String fileType; // e.g., "image/png", "image/jpeg"
+    private String imageType; // e.g., "image/png", "image/jpeg"
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String storagePath; // The path where the image is stored in the file system or cloud service.
 
     @Column(nullable = false)
@@ -35,4 +35,10 @@ public class Image {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EntityType entityType; // Enum for strict type control
+
+    @Column(nullable = false)
+    private String uniqueFileName; // Unique file name to avoid collisions
+
+    @Column(nullable = false)
+    private boolean isPrimary = false; // Default to false
 }

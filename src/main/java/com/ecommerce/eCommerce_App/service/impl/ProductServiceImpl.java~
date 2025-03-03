@@ -113,7 +113,6 @@ public class ProductServiceImpl implements ProductService {
     public void delete(Long id) {
         Product product = getById(id);
 
-        // decrease products count
         Category category = product.getCategory();
         categoryService.decreaseProductsCountByOne(category.getId());
 

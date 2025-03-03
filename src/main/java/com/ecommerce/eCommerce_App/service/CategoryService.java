@@ -17,12 +17,12 @@ public interface CategoryService {
 
 
     Category add(Category newCategory);
-    Category add(Category newCategory, MultipartFile image);
-    Category add(CategoryRequest categoryRequest);
+    Category add(Category newCategory, MultipartFile imageFile);
+    Category add(CategoryRequest categoryRequest,MultipartFile imageFile);
 
     Category update(Long categoryId,Category newCategory);
-    Category update(Long categoryId, Category newCategory, MultipartFile image);
-    Category update(Long categoryId, CategoryRequest categoryRequest);
+    Category update(Long categoryId, Category newCategory, MultipartFile newImageFile);
+    Category update(Long categoryId, CategoryRequest categoryRequest,MultipartFile newImageFile);
 
 
     void delete(Long id);
@@ -37,4 +37,7 @@ public interface CategoryService {
 
     List<Category> getAll();
 
+    void increaseProductsCountByOne(Long categoryId);
+
+    void decreaseProductsCountByOne(Long categoryId);
 }

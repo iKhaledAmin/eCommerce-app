@@ -3,6 +3,8 @@ package com.ecommerce.eCommerce_App.controller;
 
 import com.ecommerce.eCommerce_App.model.dto.CategoryRequest;
 import com.ecommerce.eCommerce_App.model.dto.CategoryResponse;
+import com.ecommerce.eCommerce_App.model.dto.ProductRequest;
+import com.ecommerce.eCommerce_App.model.dto.ProductResponse;
 import com.ecommerce.eCommerce_App.model.entity.Category;
 import com.ecommerce.eCommerce_App.service.CategoryService;
 import jakarta.validation.Valid;
@@ -10,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -19,15 +22,27 @@ import java.util.List;
 public class CategoryController {
     private final CategoryService categoryService;
 
+
     @PostMapping
-    public ResponseEntity<CategoryResponse> createCategory(@ModelAttribute @Valid CategoryRequest categoryRequest) {
-        CategoryResponse response = categoryService.toResponse(categoryService.add(categoryRequest));
+    public ResponseEntity<CategoryResponse> createCategory(
+            @RequestPart(name = "category_request") @Valid CategoryRequest categoryRequest,
+            @RequestPart(name = "image_file", required = true) MultipartFile imageFile
+    ) {
+        CategoryResponse response = categoryService.toResponse(
+                categoryService.add(categoryRequest, imageFile)
+        );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{categoryId}")
-    public ResponseEntity<CategoryResponse> updateCategory(@PathVariable Long categoryId, @ModelAttribute @Valid CategoryRequest categoryRequest) {
-        CategoryResponse response = categoryService.toResponse(categoryService.update(categoryId, categoryRequest));
+    public ResponseEntity<CategoryResponse> updateCategory(
+            @PathVariable Long categoryId,
+            @RequestPart(name = "category_request") @Valid CategoryRequest categoryRequest,
+            @RequestPart(name = "new_image_file", required = true) MultipartFile newImageFile
+    ) {
+        CategoryResponse response = categoryService.toResponse(
+                categoryService.update(categoryId, categoryRequest, newImageFile)
+        );
         return ResponseEntity.ok(response);
     }
 
