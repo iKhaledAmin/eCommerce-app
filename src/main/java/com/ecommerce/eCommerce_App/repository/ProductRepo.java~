@@ -9,10 +9,6 @@ import java.util.List;
 
 @Repository
 public interface ProductRepo extends GenericRepository<Product, Long> {
-    @Override
-    default Class<Product> getEntityClass() {
-        return Product.class;
-    }
     List<Product> findAllByName(String productName);
 
     List<Product> findAllByBrand(String brand);

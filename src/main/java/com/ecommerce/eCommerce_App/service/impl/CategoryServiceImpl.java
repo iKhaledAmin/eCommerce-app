@@ -27,6 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepo categoryRepo;
     private final CategoryMapper categoryMapper;
     private final ImageServiceImpl imageService;
+    private final EntityRetrievalServiceImpl entityRetrievalService;
     private final NonNullBeanUtils nonNullBeanUtils;
 
 
@@ -128,14 +129,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Optional<Category> getOptionalById(Long categoryId) {
-        return categoryRepo.findById(categoryId);
+        return entityRetrievalService.getOptionalById(Category.class, categoryId);
     }
 
     @Override
     public Category getById(Long categoryId) {
-        return getOptionalById(categoryId).orElseThrow(
-                () -> new NoSuchElementException("Category not found!")
-        );
+        return entityRetrievalService.getById(Category.class, categoryId);
     }
 
     @Override

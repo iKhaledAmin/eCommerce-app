@@ -1,5 +1,6 @@
 package com.ecommerce.eCommerce_App.exception;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.crossstore.ChangeSetPersister;
@@ -13,6 +14,17 @@ import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class CustomExceptionHandler {
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException exception, HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                exception.getMessage(),
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(ChangeSetPersister.NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(ChangeSetPersister.NotFoundException exception, HttpServletRequest request) {

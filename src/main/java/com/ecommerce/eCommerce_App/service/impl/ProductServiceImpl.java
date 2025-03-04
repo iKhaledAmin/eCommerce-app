@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -32,6 +31,7 @@ public class ProductServiceImpl implements ProductService {
     private final ImageServiceImpl imageService;
     private final CategoryService categoryService;
     private final NonNullBeanUtils nonNullBeanUtils;
+    private final EntityRetrievalServiceImpl entityRetrievalService;
 
     public Product toEntity(ProductRequest request) {
         return productMapper.toEntity(request);
@@ -128,14 +128,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Optional<Product> getOptionalById(Long id) {
-        return productRepo.findById(id);
+        return entityRetrievalService.getOptionalById(Product.class,id);
     }
 
     @Override
     public Product getById(Long id) {
-        return getOptionalById(id).orElseThrow(
-                () -> new NoSuchElementException("Product not found!")
-        );
+        return entityRetrievalService.getById(Product.class,id);
     }
 
     @Override
