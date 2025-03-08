@@ -39,6 +39,6 @@ public class Image {
     @Column(nullable = false)
     private String uniqueFileName; // Unique file name to avoid collisions
 
-    @Column(nullable = false)
-    private boolean isPrimary = false; // Default to false
+    @Column(name = "is_primary",nullable = false ,columnDefinition = "boolean default false") // Default value in DB
+    private boolean isPrimary ; // Default to false
 }

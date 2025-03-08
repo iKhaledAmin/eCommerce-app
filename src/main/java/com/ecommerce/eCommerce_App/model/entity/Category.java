@@ -30,8 +30,8 @@ public class Category {
     @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
-    private int productsCount = 0; // Default value
+    @Column(name = "products_count",nullable = false ,columnDefinition = "boolean default false") // Default value in DB
+    private int productsCount ; // Default value
 
     @OneToMany(
             mappedBy = "category"
