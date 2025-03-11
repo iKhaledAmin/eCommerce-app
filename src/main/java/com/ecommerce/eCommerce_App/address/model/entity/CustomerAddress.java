@@ -1,7 +1,7 @@
 package com.ecommerce.eCommerce_App.address.model.entity;
 
 import com.ecommerce.eCommerce_App.address.model.enums.AddressType;
-import com.ecommerce.eCommerce_App.model.entity.Customer;
+import com.ecommerce.eCommerce_App.users.model.entity.Customer;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

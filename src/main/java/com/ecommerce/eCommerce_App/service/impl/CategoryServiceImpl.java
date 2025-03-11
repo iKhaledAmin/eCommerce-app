@@ -99,7 +99,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         Optional<Image> existingImage = imageService.getOptionalByEntityIdAndEntityType(categoryId,EntityType.CATEGORY);
         if (existingImage.isPresent()) {
-            imageService.update(existingImage.get().getId(), newImageFile);
+            imageService.update(existingImage.get().getId(), EntityType.CATEGORY, newImageFile);
         }
 
         return updatedCategory;

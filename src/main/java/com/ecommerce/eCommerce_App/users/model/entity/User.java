@@ -1,7 +1,7 @@
-package com.ecommerce.eCommerce_App.model.entity;
+package com.ecommerce.eCommerce_App.users.model.entity;
 
-import com.ecommerce.eCommerce_App.model.enums.Gender;
-import com.ecommerce.eCommerce_App.model.enums.UserRole;
+import com.ecommerce.eCommerce_App.users.model.enums.Gender;
+import com.ecommerce.eCommerce_App.users.model.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @SuperBuilder
@@ -22,7 +20,7 @@ import java.util.List;
 @Entity
 @Table(name = "user")
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class User {
+public  class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +35,8 @@ public abstract class User {
 
     @Column(unique = true, nullable = false,updatable = false)
     private String account;
+
+    @Column(nullable = false)
     private String password;
 
     @Column(name = "email_address" ,unique = true)
@@ -52,8 +52,6 @@ public abstract class User {
     private String phoneNumber;
     private String profession;
 
-    @Column(name = "is_active", nullable = false)
-    private boolean isActive = true; // Default to true for active users
 
     @Column(name = "profile_image_url")
     private String profileImageUrl;

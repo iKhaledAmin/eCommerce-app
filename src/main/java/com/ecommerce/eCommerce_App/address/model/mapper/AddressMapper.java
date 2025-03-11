@@ -11,17 +11,12 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface AddressMapper {
 
+    @Mapping(target = "customerAddresses",expression = "java(new java.util.ArrayList<>())")
     Address toEntity(AddressRequest request);
 
     @Mapping(target = "city",source = "entity.city.name")
     @Mapping(target = "country",source = "entity.country.name")
     AddressResponse toResponse(Address entity);
 
-    @Mapping(target = "city", source = "entity.address.city.name")
-    @Mapping(target = "country", source = "entity.address.country.name")
-    @Mapping(target = "street", source = "entity.address.street")
-    @Mapping(target = "state", source = "entity.address.state")
-    @Mapping(target = "zipCode", source = "entity.address.zipCode")
-    CustomerAddressResponse toResponse(CustomerAddress entity);
 
 }

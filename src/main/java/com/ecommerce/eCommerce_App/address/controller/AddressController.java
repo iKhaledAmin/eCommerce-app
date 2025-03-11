@@ -23,7 +23,7 @@ public class AddressController {
     private final CountryService countryService ;
 
     @PostMapping
-    public ResponseEntity<AddressResponse> createAddress(@Valid @RequestBody AddressRequest addressRequest) {
+    public ResponseEntity<AddressResponse> addAddress(@Valid @RequestBody AddressRequest addressRequest) {
         // Add the new address
         AddressResponse addressResponse = addressService.toResponse(addressService.add(addressRequest));
 
@@ -92,51 +92,5 @@ public class AddressController {
         return ResponseEntity.ok(response);
     }
 
-
-    // ==================== Customer-Specific Address Endpoints ====================
-
-    @PostMapping("/customer/{customerId}")
-    public ResponseEntity<CustomerAddressResponse> addCustomerAddress(
-            @PathVariable Long customerId,
-            @Valid @RequestBody AddressRequest addressRequest,
-            @RequestParam AddressType addressType,
-            @RequestParam boolean isDefault
-    ) {
-        CustomerAddressResponse customerAddressResponse = addressService.toResponse(
-                addressService.addCustomerAddress(addressRequest, customerId, addressType, isDefault)
-        );
-        return ResponseEntity.status(HttpStatus.CREATED).body(customerAddressResponse);
-    }
-
-    @PutMapping("/customers/{customerId}/addresses/{addressId}")
-    public ResponseEntity<CustomerAddressResponse> updateCustomerAddress(
-            @PathVariable Long customerId,
-            @PathVariable Long addressId,
-            @Valid @RequestBody AddressRequest addressRequest,
-            @RequestParam AddressType addressType,
-            @RequestParam boolean isDefault
-    ) {
-        CustomerAddressResponse customerAddressResponse = addressService.toResponse(
-                addressService.updateCustomerAddress(addressId, addressRequest, customerId, addressType, isDefault)
-        );
-        return ResponseEntity.ok(customerAddressResponse);
-    }
-
-    @GetMapping("/customer/{customerId}")
-    public ResponseEntity<List<CustomerAddressResponse>> getAllCustomerAddresses(@PathVariable Long customerId) {
-        List<CustomerAddressResponse> customerAddressResponses = addressService.getAllByCustomerId(customerId).stream()
-                .map(addressService::toResponse)
-                .toList();
-        return ResponseEntity.ok(customerAddressResponses);
-    }
-
-    @DeleteMapping("/{addressId}/customer/{customerId}")
-    public ResponseEntity<Void> deleteCustomerAddress(
-            @PathVariable Long addressId,
-            @PathVariable Long customerId
-    ) {
-        addressService.deleteCustomerAddress(addressId, customerId);
-        return ResponseEntity.noContent().build();
-    }
 
 }

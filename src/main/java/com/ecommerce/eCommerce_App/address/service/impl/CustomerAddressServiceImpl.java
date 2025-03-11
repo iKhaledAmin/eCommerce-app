@@ -1,11 +1,17 @@
 package com.ecommerce.eCommerce_App.address.service.impl;
 
+import com.ecommerce.eCommerce_App.address.model.dto.AddCustomerAddressRequest;
+import com.ecommerce.eCommerce_App.address.model.dto.CustomerAddressResponse;
+import com.ecommerce.eCommerce_App.address.model.dto.UpdatedCustomerAddressRequest;
 import com.ecommerce.eCommerce_App.address.model.entity.Address;
 import com.ecommerce.eCommerce_App.address.model.entity.CustomerAddress;
 import com.ecommerce.eCommerce_App.address.model.enums.AddressType;
+import com.ecommerce.eCommerce_App.address.model.mapper.CustomerAddressMapper;
 import com.ecommerce.eCommerce_App.address.repository.CustomerAddressRepo;
+import com.ecommerce.eCommerce_App.address.service.AddressService;
 import com.ecommerce.eCommerce_App.address.service.CustomerAddressService;
-import com.ecommerce.eCommerce_App.model.entity.Customer;
+import com.ecommerce.eCommerce_App.exception.ConflictException;
+import com.ecommerce.eCommerce_App.users.model.entity.Customer;
 import com.ecommerce.eCommerce_App.service.EntityRetrievalService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -19,10 +25,15 @@ import java.util.Optional;
 @Service
 public class CustomerAddressServiceImpl implements CustomerAddressService {
     private final CustomerAddressRepo customerAddressRepo;
-    //private final AddressService addressService;
+    private final CustomerAddressMapper customerAddressMapper;
+    private final AddressService addressService;
     private final EntityRetrievalService entityRetrievalService;
 
 
+    @Override
+    public CustomerAddressResponse toResponse(CustomerAddress entity) {
+        return customerAddressMapper.toResponse(entity);
+    }
 
     private CustomerAddress save(CustomerAddress customerAddress) {
         return customerAddressRepo.save(customerAddress);
@@ -55,6 +66,11 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
 
     @Override
     public CustomerAddress add(Address newAddress, Customer customer, AddressType addressType, boolean isDefault) {
+        // Check if the CustomerAddress already exists
+         getByCustomerIdAndAddressId(customer.getId(), newAddress.getId()).ifPresent(address -> {
+             throw new ConflictException("Customer address already exists!");
+         });
+
         // Create a new CustomerAddress entity
         CustomerAddress customerAddress = create(newAddress, customer, addressType, isDefault);
 
@@ -70,12 +86,29 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
         // Save the CustomerAddress entity
         return save(customerAddress);
     }
+    @Transactional
+    @Override
+    public CustomerAddress add(Long customerId, AddCustomerAddressRequest addCustomerAddressRequest) {
+        // Fetch the Customer entity
+        Customer customer = entityRetrievalService.getById(Customer.class, customerId);
+
+        // Add the new Address
+        Address newAddress = addressService.add(addCustomerAddressRequest);
+
+        // Link the Address to the Customer
+        return add(
+                newAddress,
+                customer,
+                addCustomerAddressRequest.getAddressType(),
+                addCustomerAddressRequest.isDefault()
+        );
+    }
 
     @Override
     public CustomerAddress update(Address newAddress, Customer customer, AddressType addressType, boolean isDefault) {
         // Fetch the existing CustomerAddress entity
         CustomerAddress existingCustomerAddress = getByCustomerIdAndAddressId(customer.getId(), newAddress.getId())
-                .orElseThrow(() -> new NoSuchElementException("Customer address not found!"));
+                .orElseGet(() -> add(newAddress, customer, addressType, isDefault));
 
         // Set default address if necessary
         if (isDefault) {
@@ -93,7 +126,28 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
 
     @Transactional
     @Override
-    public void delete(Long addressId, Long customerId) {
+    public CustomerAddress update(Long customerId, UpdatedCustomerAddressRequest updatedCustomerAddressRequest) {
+        // Fetch the Customer entity
+        Customer customer = entityRetrievalService.getById(Customer.class, customerId);
+
+        // Update the Address
+        Address newAddress = addressService.update(
+                updatedCustomerAddressRequest.getAddressId(),
+                updatedCustomerAddressRequest
+        );
+
+        // Update the CustomerAddress entity
+        return update(
+                newAddress,
+                customer,
+                updatedCustomerAddressRequest.getAddressType(),
+                updatedCustomerAddressRequest.isDefault()
+        );
+    }
+
+    @Transactional
+    @Override
+    public void delete(Long customerId, Long addressId) {
         // Fetch the Customer and Address entities
         Customer customer = entityRetrievalService.getById(Customer.class, customerId);
         Address address = entityRetrievalService.getById(Address.class, addressId);
@@ -110,20 +164,18 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
         customerAddressRepo.delete(customerAddress);
     }
 
-
-    @Override
-    public List<CustomerAddress> getAllByCustomerId(Long customerId) {
-        entityRetrievalService.getById(Customer.class,customerId);
-        return customerAddressRepo.findAllByCustomerId(customerId);
-    }
-
     public List<CustomerAddress> getAllByCustomerIdAAddressType(Long customerId, AddressType addressType) {
         entityRetrievalService.getById(Customer.class,customerId);
+
+        if (addressType == null)
+            return customerAddressRepo.findAllByCustomerId(customerId);
         return customerAddressRepo.findAllByCustomerIdAndAddressType(customerId, addressType);
     }
     @Override
     public Optional<CustomerAddress> getByCustomerIdAndAddressId(Long customerId, Long addressId) {
         return customerAddressRepo.findByCustomerIdAndAddressId(customerId, addressId);
     }
+
+
 
 }

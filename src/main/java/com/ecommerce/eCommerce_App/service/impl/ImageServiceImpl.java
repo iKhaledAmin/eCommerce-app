@@ -41,7 +41,10 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Image add(MultipartFile imageFile, Long entityId, EntityType entityType) {
-        validateImageFile(imageFile);
+        if (imageFile == null || imageFile.isEmpty()) {
+            throw new IllegalArgumentException("Image file must not be empty.");
+        }
+        validateImageType(imageFile);
 
         String uniqueFileName = generateUniqueFileName(imageFile.getOriginalFilename(), entityType);
         Path filePath = Paths.get(UPLOAD_IMAGE_DIR, uniqueFileName);
@@ -62,10 +65,8 @@ public class ImageServiceImpl implements ImageService {
         return image;
     }
 
-    @Override
-    @Transactional
-    public Image update(Long imageId, MultipartFile newImageFile) {
-        validateImageFile(newImageFile);
+    private Image updateImage(Long imageId, MultipartFile newImageFile) {
+        validateImageType(newImageFile);
 
         Image existingImage = getById(imageId);
         String uniqueFileName = generateUniqueFileName(newImageFile.getOriginalFilename(),existingImage.getEntityType());
@@ -84,24 +85,41 @@ public class ImageServiceImpl implements ImageService {
 
         return imageRepo.save(existingImage);
     }
+    @Override
+    @Transactional
+    public Image update(Long entityId, EntityType entityType, MultipartFile newImageFile) {
+        Optional<Image> existingImage = getOptionalPrimaryImageByEntityIdAndEntityType(entityId, entityType);
+
+        if (newImageFile != null && !newImageFile.isEmpty()) {
+            // If newImageFile is not empty and not null
+            return existingImage.map(image -> updateImage(image.getId(), newImageFile))
+                    .orElseGet(() -> add(newImageFile, entityId, entityType));
+        } else {
+            // If newImageFile is null or empty
+            existingImage.ifPresent(image -> deleteById(image.getId()));
+            return null; // No image to return
+        }
+    }
 
     @Override
     @Transactional
     public List<Image> update(Long entityId, EntityType entityType, List<MultipartFile> newImageFiles) {
-        if (newImageFiles == null || newImageFiles.isEmpty()) {
-            throw new IllegalArgumentException("New image files must not be null or empty.");
-        }
-
-        // Fetch existing images for the entity
+        // Fetch existing images for the entity before adding new ones
         List<Image> existingImages = getAllByEntityIdAndEntityType(entityId, entityType);
+        List<Image> updatedImages = new ArrayList<>();
 
         // Add new images
-        List<Image> updatedImages = newImageFiles.stream()
-                .map(imageFile -> add(imageFile, entityId, entityType))
-                .collect(Collectors.toList());
+        if (newImageFiles != null && !newImageFiles.isEmpty()) {
+            updatedImages = newImageFiles.stream()
+                    .map(imageFile -> add(imageFile, entityId, entityType))
+                    .collect(Collectors.toList());
+        }
 
-        // Delete old images only after new images are successfully added
-        existingImages.forEach(this::deleteImage);
+        // Delete old images after new images are successfully added
+        if (existingImages.isEmpty()) {
+            existingImages.forEach(this::deleteImage);
+        }
+
 
         return updatedImages;
     }
@@ -135,6 +153,10 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public Optional<Image> getOptionalByEntityIdAndEntityType(Long entityId, EntityType entityType) {
         return imageRepo.findByEntityIdAndEntityType(entityId, entityType);
+    }
+
+    public Optional<Image> getOptionalPrimaryImageByEntityIdAndEntityType(Long entityId, EntityType entityType){
+        return imageRepo.findByEntityIdAndEntityTypeAndIsPrimary(entityId, entityType, true);
     }
 
     @Override
@@ -180,11 +202,7 @@ public class ImageServiceImpl implements ImageService {
         return imageRepo.save(image);
     }
 
-    private void validateImageFile(MultipartFile imageFile) {
-        if (imageFile == null || imageFile.isEmpty()) {
-            throw new IllegalArgumentException("Image file must not be empty.");
-        }
-
+    private void validateImageType(MultipartFile imageFile) {
         if (!ALLOWED_IMAGE_TYPES.contains(imageFile.getContentType())) {
             throw new IllegalArgumentException("Invalid image type. Allowed types are: " + ALLOWED_IMAGE_TYPES);
         }

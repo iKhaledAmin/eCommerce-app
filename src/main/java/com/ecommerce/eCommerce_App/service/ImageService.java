@@ -14,7 +14,7 @@ public interface ImageService {
     ImageResponse toResponse(Image entity);
 
     Image add(MultipartFile file, Long entityId, EntityType entityType);
-    Image update(Long imageId, MultipartFile newFile);
+    Image update(Long entityId,EntityType entityType, MultipartFile newImageFile);
     List<Image> update(Long entityId, EntityType entityType,List<MultipartFile> newImageFiles);
     void deleteById(Long id);
     void deleteAllByEntityIdAndEntityType(Long entityId, EntityType entityType);
@@ -24,6 +24,7 @@ public interface ImageService {
     Image getById(Long id);
 
     Optional<Image> getOptionalByEntityIdAndEntityType(Long entityId, EntityType entityType);
+    Optional<Image> getOptionalPrimaryImageByEntityIdAndEntityType(Long entityId, EntityType entityType);
     Image getByEntityIdAndEntityType(Long entityId, EntityType entityType);
 
     List<Image> getAllByEntityIdAndEntityType(Long entityId, EntityType entityType);
