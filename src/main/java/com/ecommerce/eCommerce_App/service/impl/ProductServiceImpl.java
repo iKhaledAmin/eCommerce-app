@@ -2,13 +2,14 @@ package com.ecommerce.eCommerce_App.service.impl;
 
 
 import com.ecommerce.eCommerce_App.global.utils.NonNullBeanUtils;
-import com.ecommerce.eCommerce_App.model.dto.ImageResponse;
+import com.ecommerce.eCommerce_App.image.ImageResponse;
+import com.ecommerce.eCommerce_App.image.ImageServiceImpl;
 import com.ecommerce.eCommerce_App.model.dto.ProductRequest;
 import com.ecommerce.eCommerce_App.model.dto.ProductResponse;
 import com.ecommerce.eCommerce_App.model.entity.Category;
-import com.ecommerce.eCommerce_App.model.entity.Image;
+import com.ecommerce.eCommerce_App.image.Image;
 import com.ecommerce.eCommerce_App.model.entity.Product;
-import com.ecommerce.eCommerce_App.model.enums.EntityType;
+import com.ecommerce.eCommerce_App.image.EntityType;
 import com.ecommerce.eCommerce_App.model.mapper.ProductMapper;
 import com.ecommerce.eCommerce_App.repository.ProductRepo;
 import com.ecommerce.eCommerce_App.service.CategoryService;

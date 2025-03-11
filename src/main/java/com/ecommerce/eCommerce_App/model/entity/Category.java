@@ -30,6 +30,9 @@ public class Category {
     @Column(nullable = false)
     private String description;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @Column(name = "products_count",nullable = false ,columnDefinition = "boolean default false") // Default value in DB
     private int productsCount ; // Default value
 

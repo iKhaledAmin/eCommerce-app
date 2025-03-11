@@ -1,9 +1,5 @@
-package com.ecommerce.eCommerce_App.service;
+package com.ecommerce.eCommerce_App.image;
 
-import com.ecommerce.eCommerce_App.model.dto.ImageResponse;
-import com.ecommerce.eCommerce_App.model.entity.Image;
-import com.ecommerce.eCommerce_App.model.enums.EntityType;
-import jakarta.transaction.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

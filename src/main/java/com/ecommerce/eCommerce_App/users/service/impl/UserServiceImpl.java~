@@ -89,12 +89,6 @@ public class UserServiceImpl implements UserService {
         return save(existingUser);
     }
 
-    @Override
-    public User update(Long userId,User newUser, MultipartFile newImageFile) {
-        handleUserImage(userId,newUser,newImageFile);
-        return update(userId,newUser);
-    }
-
     private void handleUserImage(Long userId, User newUser, MultipartFile newImageFile) {
         // Delegate image handling to ImageService
         Image updatedImage = imageService.update(userId, EntityType.USER, newImageFile);
@@ -107,30 +101,12 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-//    private void handleUserImage(Long userId, User newUser, MultipartFile newImageFile) {
-//        if ( newImageFile != null && !newImageFile.isEmpty() ) {
-//            System.out.println("newImageFile is not empty and not null");
-//            imageService.getOptionalByEntityIdAndEntityType(userId, EntityType.USER)
-//                    .ifPresentOrElse(
-//                            existingImage -> {
-//                                Image updatedImage = imageService.update(existingImage.getId(), newImageFile);
-//                                newUser.setProfileImageUrl(updatedImage.getStoragePath());
-//                            },
-//                            () -> {
-//                                Image newImage = imageService.add(newImageFile, userId, EntityType.USER);
-//                                newUser.setProfileImageUrl(newImage.getStoragePath());
-//                            }
-//                    );
-//        }else{
-//            System.out.println("newImageFile is null or empty");
-//            Optional<Image> existingImage = imageService.getOptionalByEntityIdAndEntityType(userId, EntityType.USER);
-//            if (existingImage.isPresent()) {
-//                imageService.deleteById(existingImage.get().getId());
-//            }
-//            newUser.setProfileImageUrl(null);
-//        }
-//
-//    }
+    @Override
+    public User update(Long userId,User newUser, MultipartFile newImageFile) {
+        handleUserImage(userId,newUser,newImageFile);
+        return update(userId,newUser);
+    }
+
 
     @Override
     public User editProfile(Long userId, UserRequest userRequest, MultipartFile newImageFile) {

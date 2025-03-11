@@ -1,4 +1,4 @@
-package com.ecommerce.eCommerce_App.model.enums;
+package com.ecommerce.eCommerce_App.image;
 
 public enum EntityType {
     PRODUCT,

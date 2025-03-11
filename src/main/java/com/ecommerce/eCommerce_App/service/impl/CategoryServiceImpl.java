@@ -3,11 +3,12 @@ package com.ecommerce.eCommerce_App.service.impl;
 
 import com.ecommerce.eCommerce_App.exception.ConflictException;
 import com.ecommerce.eCommerce_App.global.utils.NonNullBeanUtils;
+import com.ecommerce.eCommerce_App.image.ImageServiceImpl;
 import com.ecommerce.eCommerce_App.model.dto.CategoryRequest;
 import com.ecommerce.eCommerce_App.model.dto.CategoryResponse;
 import com.ecommerce.eCommerce_App.model.entity.Category;
-import com.ecommerce.eCommerce_App.model.entity.Image;
-import com.ecommerce.eCommerce_App.model.enums.EntityType;
+import com.ecommerce.eCommerce_App.image.Image;
+import com.ecommerce.eCommerce_App.image.EntityType;
 import com.ecommerce.eCommerce_App.model.mapper.CategoryMapper;
 import com.ecommerce.eCommerce_App.repository.CategoryRepo;
 import com.ecommerce.eCommerce_App.service.CategoryService;
@@ -92,16 +93,21 @@ public class CategoryServiceImpl implements CategoryService {
         return save(existingCategory);
     }
 
+    private void handleUpdatingCategoryImage(Long categoryId, Category newCategory, MultipartFile newImageFile) {
+        // Delegate image handling to ImageService
+        Image updatedImage = imageService.update(categoryId,EntityType.CATEGORY, newImageFile);
+
+        // Update the profileImageUrl in the User entity
+        if (updatedImage != null) {
+            newCategory.setImageUrl(updatedImage.getStoragePath());
+        } else {
+            newCategory.setImageUrl(null); // Set to null if the image was deleted
+        }
+    }
     @Override
     public Category update(Long categoryId, Category newCategory, MultipartFile newImageFile) {
-
         Category updatedCategory = update(categoryId, newCategory);
-
-        Optional<Image> existingImage = imageService.getOptionalByEntityIdAndEntityType(categoryId,EntityType.CATEGORY);
-        if (existingImage.isPresent()) {
-            imageService.update(existingImage.get().getId(), EntityType.CATEGORY, newImageFile);
-        }
-
+        handleUpdatingCategoryImage(categoryId, updatedCategory, newImageFile);
         return updatedCategory;
     }
 

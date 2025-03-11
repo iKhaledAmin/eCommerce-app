@@ -1,11 +1,5 @@
-package com.ecommerce.eCommerce_App.service.impl;
+package com.ecommerce.eCommerce_App.image;
 
-import com.ecommerce.eCommerce_App.model.dto.ImageResponse;
-import com.ecommerce.eCommerce_App.model.entity.Image;
-import com.ecommerce.eCommerce_App.model.enums.EntityType;
-import com.ecommerce.eCommerce_App.model.mapper.ImageMapper;
-import com.ecommerce.eCommerce_App.repository.ImageRepo;
-import com.ecommerce.eCommerce_App.service.ImageService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 

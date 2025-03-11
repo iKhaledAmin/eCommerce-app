@@ -1,6 +1,6 @@
 package com.ecommerce.eCommerce_App.service;
 
-import com.ecommerce.eCommerce_App.model.dto.ImageResponse;
+import com.ecommerce.eCommerce_App.image.ImageResponse;
 import com.ecommerce.eCommerce_App.model.dto.ProductRequest;
 import com.ecommerce.eCommerce_App.model.dto.ProductResponse;
 import com.ecommerce.eCommerce_App.model.entity.Product;

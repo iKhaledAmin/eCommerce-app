@@ -1,4 +1,4 @@
-package com.ecommerce.eCommerce_App.model.dto;
+package com.ecommerce.eCommerce_App.image;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

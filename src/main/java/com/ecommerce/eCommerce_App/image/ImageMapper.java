@@ -1,11 +1,7 @@
-package com.ecommerce.eCommerce_App.model.mapper;
+package com.ecommerce.eCommerce_App.image;
 
-
-import com.ecommerce.eCommerce_App.model.dto.ImageResponse;
-import com.ecommerce.eCommerce_App.model.entity.Image;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.springframework.beans.factory.annotation.Value;
 
 @Mapper(componentModel = "spring")
 public interface ImageMapper {

@@ -1,7 +1,5 @@
-package com.ecommerce.eCommerce_App.repository;
+package com.ecommerce.eCommerce_App.image;
 
-import com.ecommerce.eCommerce_App.model.entity.Image;
-import com.ecommerce.eCommerce_App.model.enums.EntityType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
