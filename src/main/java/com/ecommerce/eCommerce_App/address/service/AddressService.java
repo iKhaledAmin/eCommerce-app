@@ -2,9 +2,8 @@ package com.ecommerce.eCommerce_App.address.service;
 
 import com.ecommerce.eCommerce_App.address.model.dto.AddressRequest;
 import com.ecommerce.eCommerce_App.address.model.dto.AddressResponse;
-import com.ecommerce.eCommerce_App.address.model.dto.CustomerAddressResponse;
+
 import com.ecommerce.eCommerce_App.address.model.entity.Address;
-import com.ecommerce.eCommerce_App.address.model.entity.CustomerAddress;
 
 
 import java.util.List;

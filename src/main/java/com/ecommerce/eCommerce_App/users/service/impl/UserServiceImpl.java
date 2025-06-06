@@ -1,10 +1,10 @@
 package com.ecommerce.eCommerce_App.users.service.impl;
 
-import com.ecommerce.eCommerce_App.exception.ConflictException;
+import com.ecommerce.eCommerce_App.global.exception.ConflictException;
 import com.ecommerce.eCommerce_App.global.utils.NonNullBeanUtils;
 import com.ecommerce.eCommerce_App.image.Image;
 import com.ecommerce.eCommerce_App.image.EntityType;
-import com.ecommerce.eCommerce_App.service.EntityRetrievalService;
+import com.ecommerce.eCommerce_App.global.service.EntityRetrievalService;
 import com.ecommerce.eCommerce_App.image.ImageServiceImpl;
 import com.ecommerce.eCommerce_App.users.model.dto.RegistrationRequest;
 import com.ecommerce.eCommerce_App.users.model.dto.UserRequest;

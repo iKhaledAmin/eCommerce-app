@@ -1,7 +1,9 @@
 package com.ecommerce.eCommerce_App.users.service.impl;
 
 
-import com.ecommerce.eCommerce_App.service.EntityRetrievalService;
+import com.ecommerce.eCommerce_App.cart.model.entity.Cart;
+import com.ecommerce.eCommerce_App.cart.service.CartService;
+import com.ecommerce.eCommerce_App.global.service.EntityRetrievalService;
 import com.ecommerce.eCommerce_App.users.model.dto.CustomerResponse;
 import com.ecommerce.eCommerce_App.users.model.dto.RegistrationRequest;
 import com.ecommerce.eCommerce_App.users.model.dto.UserRequest;
@@ -27,6 +29,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepo customerRepo;
     private final CustomerMapper customerMapper;
     private final UserService userService;
+    private final CartService cartService;
     private final EntityRetrievalService entityRetrievalService;
 
 
@@ -59,6 +62,10 @@ public class CustomerServiceImpl implements CustomerService {
     public Customer register(RegistrationRequest registrationRequest){
         Customer newCustomer = toEntity(registrationRequest);
         newCustomer =(Customer) userService.add(newCustomer,UserRole.ROLE_CUSTOMER);
+
+        Cart cart = cartService.addCart(newCustomer.getId());
+        newCustomer.setCart(cart);
+
         return add(newCustomer);
     }
 

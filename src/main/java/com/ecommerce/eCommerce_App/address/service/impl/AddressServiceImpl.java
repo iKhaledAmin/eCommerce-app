@@ -2,15 +2,13 @@ package com.ecommerce.eCommerce_App.address.service.impl;
 
 import com.ecommerce.eCommerce_App.address.model.dto.AddressRequest;
 import com.ecommerce.eCommerce_App.address.model.dto.AddressResponse;
-import com.ecommerce.eCommerce_App.address.model.dto.CustomerAddressResponse;
 import com.ecommerce.eCommerce_App.address.model.entity.Address;
 import com.ecommerce.eCommerce_App.address.model.entity.City;
 import com.ecommerce.eCommerce_App.address.model.entity.Country;
-import com.ecommerce.eCommerce_App.address.model.entity.CustomerAddress;
 import com.ecommerce.eCommerce_App.address.model.mapper.AddressMapper;
 import com.ecommerce.eCommerce_App.address.repository.AddressRepo;
 import com.ecommerce.eCommerce_App.address.service.AddressService;
-import com.ecommerce.eCommerce_App.service.EntityRetrievalService;
+import com.ecommerce.eCommerce_App.global.service.EntityRetrievalService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

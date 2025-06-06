@@ -1,6 +1,6 @@
 package com.ecommerce.eCommerce_App.users.repository;
 
-import com.ecommerce.eCommerce_App.repository.GenericRepository;
+import com.ecommerce.eCommerce_App.global.repository.GenericRepository;
 import com.ecommerce.eCommerce_App.users.model.entity.Customer;
 import org.springframework.stereotype.Repository;
 

@@ -1,0 +1,2 @@
+package com.ecommerce.eCommerce_App.cart.service;public interface CartItemService {
+}

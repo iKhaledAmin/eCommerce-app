@@ -9,7 +9,7 @@ import com.ecommerce.eCommerce_App.address.model.mapper.CountryMapper;
 import com.ecommerce.eCommerce_App.address.repository.CityRepo;
 import com.ecommerce.eCommerce_App.address.repository.CountryRepo;
 import com.ecommerce.eCommerce_App.address.service.CountryService;
-import com.ecommerce.eCommerce_App.service.EntityRetrievalService;
+import com.ecommerce.eCommerce_App.global.service.EntityRetrievalService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

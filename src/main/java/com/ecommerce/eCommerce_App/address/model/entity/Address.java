@@ -50,6 +50,7 @@ public class Address {
             mappedBy = "address"
             ,cascade = CascadeType.ALL
             , orphanRemoval = true
+            , fetch = FetchType.LAZY
     )
     private List<CustomerAddress> customerAddresses = new ArrayList<>();
 

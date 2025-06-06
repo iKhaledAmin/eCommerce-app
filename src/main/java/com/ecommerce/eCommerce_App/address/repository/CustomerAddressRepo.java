@@ -2,7 +2,7 @@ package com.ecommerce.eCommerce_App.address.repository;
 
 import com.ecommerce.eCommerce_App.address.model.entity.CustomerAddress;
 import com.ecommerce.eCommerce_App.address.model.enums.AddressType;
-import com.ecommerce.eCommerce_App.repository.GenericRepository;
+import com.ecommerce.eCommerce_App.global.repository.GenericRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

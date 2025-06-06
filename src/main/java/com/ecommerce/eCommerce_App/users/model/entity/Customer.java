@@ -1,6 +1,7 @@
 package com.ecommerce.eCommerce_App.users.model.entity;
 
 import com.ecommerce.eCommerce_App.address.model.entity.CustomerAddress;
+import com.ecommerce.eCommerce_App.cart.model.entity.Cart;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,9 @@ public class Customer extends User {
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate lastPurchaseDate; // Example: Date of the last purchase
 
+    @OneToOne
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 
     @OneToMany(
             mappedBy = "customer"
