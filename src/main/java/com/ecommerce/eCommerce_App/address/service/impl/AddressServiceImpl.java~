@@ -110,7 +110,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public AddressSnapshot createAddressSnapshot(Address address) {
+    public AddressSnapshot createAddressSnapshot(Address address, AddressType addressType) {
         return addressSnapshotRepo.save(
                 AddressSnapshot.builder()
                         .street(address.getStreet())
@@ -119,6 +119,7 @@ public class AddressServiceImpl implements AddressService {
                         .state(address.getState())
                         .zipCode(address.getZipCode())
                         .originalAddressId(address.getId())
+                        .addressType(addressType)
                         .build()
         );
     }

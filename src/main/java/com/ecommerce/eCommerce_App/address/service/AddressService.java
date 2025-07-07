@@ -4,6 +4,8 @@ import com.ecommerce.eCommerce_App.address.model.dto.AddressRequest;
 import com.ecommerce.eCommerce_App.address.model.dto.AddressResponse;
 
 import com.ecommerce.eCommerce_App.address.model.entity.Address;
+import com.ecommerce.eCommerce_App.address.model.entity.AddressSnapshot;
+import com.ecommerce.eCommerce_App.address.model.enums.AddressType;
 
 
 import java.util.List;
@@ -28,5 +30,6 @@ public interface AddressService {
     List<Address> getAll();
     Optional<Address> getOptionalByCountryIdAndCityIdAndStreetAndStateAndZipCode(Long countryId, Long cityId, String street, String state, String zipCode);
 
+    AddressSnapshot createAddressSnapshot(Address address);
 
 }

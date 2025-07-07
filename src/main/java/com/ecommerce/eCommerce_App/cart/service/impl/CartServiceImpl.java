@@ -171,7 +171,6 @@ public class CartServiceImpl implements CartService {
             cart.getCartItems().clear();
             cart.setItemCount(0L);
             cart.setProductCount(0L);
-            cart.setTotalAmount(BigDecimal.valueOf(0.0));
             cartRepo.save(cart);
         }
     }
@@ -211,7 +210,6 @@ public class CartServiceImpl implements CartService {
         Cart cart = new Cart();
         cart.setItemCount(0L);
         cart.setProductCount(0L);
-        cart.setTotalAmount(BigDecimal.valueOf(0.0));
         return cart;
     }
 
@@ -226,18 +224,17 @@ public class CartServiceImpl implements CartService {
                 .sum();
     }
 
-    private BigDecimal calculateTotalAmount(Cart cart) {
-        return cart.getCartItems().stream()
-                .map(item -> item.getProduct().getPrice()
-                        .multiply(BigDecimal.valueOf(item.getQuantity()))
-                )
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
+//    private BigDecimal calculateTotalAmount(Cart cart) {
+//        return cart.getCartItems().stream()
+//                .map(item -> item.getProduct().getPrice()
+//                        .multiply(BigDecimal.valueOf(item.getQuantity()))
+//                )
+//                .reduce(BigDecimal.ZERO, BigDecimal::add);
+//    }
 
     private Cart updateCartAggregates(Cart cart) {
         cart.setProductCount(calculateProductCount(cart));
         cart.setItemCount(calculateItemCount(cart));
-        cart.setTotalAmount(calculateTotalAmount(cart));
 
         return cartRepo.save(cart);
     }

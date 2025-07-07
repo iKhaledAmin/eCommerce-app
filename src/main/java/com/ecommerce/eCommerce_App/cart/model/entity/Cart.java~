@@ -30,7 +30,7 @@ public class Cart {
 
     @Column(name = "item_count",columnDefinition = "bigint default 0",nullable = false)
     private Long itemCount; // Number of all items in the cart
-
+    
     @Transient // Not stored in DB, computed when needed
     public BigDecimal getTotalPrice() {
         return cartItems.stream()
