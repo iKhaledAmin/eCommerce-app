@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 
 @Entity
-@Table(name = "cart")
+@Table(name = "carts")
 public class Cart {
 
     @Id
@@ -34,14 +34,14 @@ public class Cart {
     @Transient // Not stored in DB, computed when needed
     public BigDecimal getTotalPrice() {
         return cartItems.stream()
-                .map(item -> item.getProduct().getPrice()
+                .map(item -> item.getProduct().getSellingPrice()
                         .multiply(BigDecimal.valueOf(item.getQuantity()))
                 )
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
 
-    // Relationships
+    // ======================== Relationships ======================== //
 
     @OneToOne
     @JoinColumn(name = "customer_id", nullable = false,updatable = false)

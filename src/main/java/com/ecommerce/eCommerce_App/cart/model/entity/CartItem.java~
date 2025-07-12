@@ -27,7 +27,7 @@ public class CartItem {
 
 
 
-    // ======================== Relationships ======================== //
+    // Relationships
 
     @ManyToOne
     @JoinColumn(name = "cart_id", nullable = false,updatable = false)

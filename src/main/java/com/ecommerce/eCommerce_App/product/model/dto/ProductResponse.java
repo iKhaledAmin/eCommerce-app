@@ -1,12 +1,13 @@
 package com.ecommerce.eCommerce_App.product.model.dto;
 
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.List;
+
 
 @Data
 @AllArgsConstructor
@@ -36,4 +37,8 @@ public class ProductResponse {
 
     @JsonProperty("product_image_url")
     private String imageUrl;
+
+    @JsonProperty("product_status")
+    private String status;
+
 }

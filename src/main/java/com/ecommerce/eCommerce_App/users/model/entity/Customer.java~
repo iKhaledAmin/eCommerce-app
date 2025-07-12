@@ -34,7 +34,7 @@ public class Customer extends User {
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate lastPurchaseDate; // Example: Date of the last purchase
 
-    // ======================== Relationships ======================== //
+    // Relationships
 
     @OneToOne
     @JoinColumn(name = "cart_id")

@@ -14,18 +14,11 @@ public interface ProductService {
     Product toEntity(ProductRequest request);
     ProductResponse toResponse(Product entity);
 
-    Product add(Long categoryId,Product newProduct);
-    Product add(Long categoryId,Product newProduct,List<MultipartFile> images);
-    Product add(Long categoryId,ProductRequest productRequest,List<MultipartFile> imageFiles);
+    Product add(ProductRequest productRequest,List<MultipartFile> imageFiles);
 
-
-    Product update(Long productId,Product newProduct);
-    Product update(Long productId, Product newProduct,List<MultipartFile> newImageFiles);
     Product update(Long productId, ProductRequest productRequest,List<MultipartFile> newImageFiles);
 
 
-
-    void delete(Long id);
     Optional<Product> getOptionalById(Long id);
     Product getById(Long id);
     Product getByIdWithLock(Long id);

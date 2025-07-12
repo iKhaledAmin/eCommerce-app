@@ -24,7 +24,7 @@ public interface CartItemMapper {
     }
 
     default BigDecimal calculateItemTotal(CartItem item) {
-        return item.getProduct().getSellingPrice()
+        return item.getProduct().getPrice()
                 .multiply(BigDecimal.valueOf(item.getQuantity()));
     }
 }

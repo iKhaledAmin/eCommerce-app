@@ -1,9 +1,6 @@
 package com.ecommerce.eCommerce_App.address.model.entity;
 
-import com.ecommerce.eCommerce_App.address.model.enums.AddressType;
-import com.ecommerce.eCommerce_App.order.model.entity.Order;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

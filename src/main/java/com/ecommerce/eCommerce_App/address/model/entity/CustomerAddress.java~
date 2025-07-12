@@ -15,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(
-    name = "customer_addresses",
+    name = "customer_address",
     uniqueConstraints = {
             @UniqueConstraint(columnNames = {"customer_id", "address_id"})
     }

@@ -11,12 +11,10 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Data
 @SuperBuilder
@@ -59,7 +57,7 @@ public class Order {
     @Column(name = "item_count",columnDefinition = "bigint default 0",nullable = false)
     private Long itemCount; // Number of all items in the order
 
-    // ========== Relationships ========== //
+    // ======================== Relationships ======================== //
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false, updatable = false)

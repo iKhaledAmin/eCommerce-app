@@ -1,8 +1,7 @@
 package com.ecommerce.eCommerce_App.product.service.impl;
 
 
-import com.ecommerce.eCommerce_App.product.exception.InsufficientInventoryException;
-import com.ecommerce.eCommerce_App.product.exception.ZeroInventoryException;
+import com.ecommerce.eCommerce_App.global.exception.BadRequestException;
 import com.ecommerce.eCommerce_App.global.utils.NonNullBeanUtils;
 import com.ecommerce.eCommerce_App.image.ImageResponse;
 import com.ecommerce.eCommerce_App.image.ImageServiceImpl;
@@ -12,11 +11,14 @@ import com.ecommerce.eCommerce_App.category.model.entity.Category;
 import com.ecommerce.eCommerce_App.image.Image;
 import com.ecommerce.eCommerce_App.product.model.entity.Product;
 import com.ecommerce.eCommerce_App.image.EntityType;
+import com.ecommerce.eCommerce_App.product.model.enums.Status;
 import com.ecommerce.eCommerce_App.product.model.mapper.ProductMapper;
 import com.ecommerce.eCommerce_App.product.repository.ProductRepo;
 import com.ecommerce.eCommerce_App.category.service.CategoryService;
 import com.ecommerce.eCommerce_App.product.service.ProductService;
 import com.ecommerce.eCommerce_App.global.service.impl.EntityRetrievalServiceImpl;
+import com.ecommerce.eCommerce_App.stock.model.enity.StockItem;
+import com.ecommerce.eCommerce_App.stock.service.StockService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -35,6 +37,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private final ImageServiceImpl imageService;
     private final CategoryService categoryService;
+    private final StockService stockService;
     private final NonNullBeanUtils nonNullBeanUtils;
     private final EntityRetrievalServiceImpl entityRetrievalService;
 
@@ -57,79 +60,85 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product add(Long categoryId,Product newProduct) {
-
-        Category category = categoryService.getById(categoryId);
-        categoryService.increaseProductsCountByOne(categoryId);
-        newProduct.setCategory(category);
-        category.getProducts().add(newProduct);
-
-        return save(newProduct);
-    }
-    @Override
-    public Product add(Long categoryId,Product newProduct,List<MultipartFile> imageFiles) {
-
-        // save product
-        Product servedProduct = add(categoryId,newProduct);
-
-        // if no images return
-        if (imageFiles == null || imageFiles.isEmpty()) return servedProduct;
-        // save images
-        imageFiles.forEach(imageFile ->
-                imageService.add(imageFile,servedProduct.getId(), EntityType.PRODUCT)
-        );
-
-        return servedProduct;
-    }
-    @Override
     @Transactional
-    public Product add(Long categoryId,ProductRequest productRequest,List<MultipartFile> imageFiles) {
+    public Product add(ProductRequest productRequest, List<MultipartFile> imageFiles) {
+        // Convert the request to an entity
         Product newProduct = toEntity(productRequest);
-        return add(categoryId,newProduct,imageFiles);
-    }
 
-    @Override
-    public Product update(Long productId, Product newProduct) {
-        Product existingProduct = getById(productId);
-
-        // Copy properties from newProduct to existingProduct, excluding the "id", "category","images", and "inventoryQuantity" properties
-        nonNullBeanUtils.copyProperties(newProduct, existingProduct, "id", "category", "images","inventoryQuantity");
-
-        return save(existingProduct);
-
-    }
-
-    @Override
-    public Product update(Long productId, Product newProduct,List<MultipartFile> newImageFiles) {
-        Product updatedProduct = update(productId,newProduct);
-        imageService.update(updatedProduct.getId(),EntityType.PRODUCT,newImageFiles);
-        return updatedProduct;
-    }
-
-    @Override
-    @Transactional
-    public Product update(Long productId, ProductRequest productRequest,List<MultipartFile> imageFiles) {
-        Product newProduct = toEntity(productRequest);
-        return update(productId,newProduct,imageFiles);
-    }
-
-    @Override
-    @Transactional
-    public void delete(Long id) {
-        Product product = getById(id);
-
-        // decrease products count
-        Category category = product.getCategory();
-        categoryService.decreaseProductsCountByOne(category.getId());
-
-        // delete images
-        List<Image> images = imageService.getAllByEntityIdAndEntityType(id,EntityType.PRODUCT);
-        if (images != null && !images.isEmpty()) {
-            imageService.deleteAllByEntityIdAndEntityType(id,EntityType.PRODUCT);
+        if (productRequest.getStatus() == Status.ACTIVE && productRequest.getSellingPrice() == null) {
+            throw new BadRequestException("Selling price must be provided when status is ACTIVE");
         }
 
-        productRepo.deleteById(id);
+        // handle category and link it to the product
+        Category category = categoryService.getById(productRequest.getCategoryId());
+        newProduct.setCategory(category);
+        categoryService.increaseProductsCountByOne(category.getId());
+
+
+        // Save product to generate ID
+        newProduct = save(newProduct);
+
+        // Extract quantity
+        long quantity = Optional.ofNullable(productRequest.getStockDetails())
+                .map(stockDetails -> stockDetails.getItemQuantity())
+                .orElse(0L);
+
+        // Add stock item
+        StockItem stockItem = stockService.addStockItemForProduct(newProduct, quantity);
+        newProduct.setStockItem(stockItem);
+
+
+        // Add batch if needed
+        if (productRequest.getStockDetails() != null) {
+            stockService.addStockBatchForProduct(
+                    newProduct.getId(),
+                    productRequest.getStockDetails().getItemQuantity(),
+                    productRequest.getStockDetails().getItemBuyingPrice(),
+                    productRequest.getStockDetails().getItemExpirationDate()
+            );
+        }
+
+        // Handle images
+        if (imageFiles != null && !imageFiles.isEmpty()) {
+            for (MultipartFile image : imageFiles) {
+                imageService.add(image, newProduct.getId(), EntityType.PRODUCT);
+            }
+        }
+
+        return newProduct;
     }
+
+    @Override
+    @Transactional
+    public Product update(Long productId, ProductRequest productRequest, List<MultipartFile> imageFiles) {
+        // 1. Fetch the existing product
+        Product existingProduct = getById(productId);
+
+        // 2. Map updated values from DTO
+        Product updatedProduct = toEntity(productRequest);
+
+        // 3. Load the new category and associate it
+        Category newCategory = categoryService.getById(productRequest.getCategoryId());
+        updatedProduct.setCategory(newCategory);
+        if (!newCategory.getProducts().contains(existingProduct)) {
+            newCategory.getProducts().add(existingProduct);
+        }
+
+        // 4. Apply business rule: status = ACTIVE requires selling price
+        if (productRequest.getStatus() == Status.ACTIVE && productRequest.getSellingPrice() == null) {
+            throw new BadRequestException("Selling price must be provided when status is ACTIVE");
+        }
+
+        // 5. Copy properties from updatedProduct to existingProduct (excluding "id", "stockItem", and "category")
+        nonNullBeanUtils.copyProperties(updatedProduct, existingProduct, "id", "stockItem", "category");
+
+        // 6. Handle image update
+        imageService.update(existingProduct.getId(), EntityType.PRODUCT, imageFiles);
+
+        // 7. Save and return
+        return save(existingProduct);
+    }
+
 
     @Override
     public Optional<Product> getOptionalById(Long id) {
@@ -219,14 +228,14 @@ public class ProductServiceImpl implements ProductService {
         Product product = getByIdWithLock(productId);
 
         // Check inventory
-        long currentQuantity = product.getInventoryQuantity();
-        if (currentQuantity == 0)
-            throw new ZeroInventoryException(product.getName());
-        if (currentQuantity < quantity)
-            throw new InsufficientInventoryException(currentQuantity, quantity);
-
-        // Update inventory (protected by lock)
-        product.setInventoryQuantity(currentQuantity - quantity);
+//        long currentQuantity = product.getInventoryQuantity();
+//        if (currentQuantity == 0)
+//            throw new ZeroInventoryException(product.getName());
+//        if (currentQuantity < quantity)
+//            throw new InsufficientInventoryException(currentQuantity, quantity);
+//
+//        // Update inventory (protected by lock)
+//        product.setInventoryQuantity(currentQuantity - quantity);
 
         return save(product);
     }
@@ -236,13 +245,13 @@ public class ProductServiceImpl implements ProductService {
     public Product restockProductInInventory(Long productId, Long quantity) {
         // Lock and load the product for update the product inventory quantity.
         Product product = getByIdWithLock(productId);
-        try {
-            // Safe addition ( that prevents overflow )
-            long newQuantity = Math.addExact(product.getInventoryQuantity(), quantity);
-            product.setInventoryQuantity(newQuantity);
-        } catch (ArithmeticException e) {
-            throw new ArithmeticException("Product inventory quantity overflow");
-        }
+//        try {
+//            // Safe addition ( that prevents overflow )
+//            long newQuantity = Math.addExact(product.getInventoryQuantity(), quantity);
+//            product.setInventoryQuantity(newQuantity);
+//        } catch (ArithmeticException e) {
+//            throw new ArithmeticException("Product inventory quantity overflow");
+//        }
 
         return save(product);
     }

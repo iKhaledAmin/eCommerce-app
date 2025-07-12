@@ -1,0 +1,29 @@
+package com.ecommerce.eCommerce_App.stock.model.mapper;
+
+import com.ecommerce.eCommerce_App.stock.model.dto.RestockResponse;
+import com.ecommerce.eCommerce_App.stock.model.dto.StockBatchRequest;
+import com.ecommerce.eCommerce_App.stock.model.dto.StockBatchResponse;
+import com.ecommerce.eCommerce_App.stock.model.enity.StockBatch;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+@Mapper(componentModel = "spring")
+public interface StockMapper {
+    StockBatch toEntity(StockBatchRequest request);
+
+
+    // For general batch response
+    @Mapping(target = "productId", source = "entity.stockItem.product.id")
+    @Mapping(target = "productName", source = "entity.stockItem.product.name")
+    StockBatchResponse toSResponse(StockBatch entity);
+
+
+
+    // For detailed restock response
+    @Mapping(target = "productId", source = "entity.stockItem.product.id")
+    @Mapping(target = "productName", source = "entity.stockItem.product.name")
+    @Mapping(target = "totalProductStockQuantity", source = "entity.stockItem.totalProductQuantity")
+    RestockResponse toResponse(StockBatch entity);
+
+
+}

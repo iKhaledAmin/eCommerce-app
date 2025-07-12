@@ -5,7 +5,6 @@ import com.ecommerce.eCommerce_App.product.exception.InsufficientInventoryExcept
 import com.ecommerce.eCommerce_App.product.exception.ZeroInventoryException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

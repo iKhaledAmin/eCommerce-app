@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 
 @Entity
-@Table(name = "cart")
+@Table(name = "carts")
 public class Cart {
 
     @Id
@@ -30,11 +30,11 @@ public class Cart {
 
     @Column(name = "item_count",columnDefinition = "bigint default 0",nullable = false)
     private Long itemCount; // Number of all items in the cart
-    
+
     @Transient // Not stored in DB, computed when needed
     public BigDecimal getTotalPrice() {
         return cartItems.stream()
-                .map(item -> item.getProduct().getPrice()
+                .map(item -> item.getProduct().getSellingPrice()
                         .multiply(BigDecimal.valueOf(item.getQuantity()))
                 )
                 .reduce(BigDecimal.ZERO, BigDecimal::add);

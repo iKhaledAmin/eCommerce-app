@@ -20,14 +20,13 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
 
-    @PostMapping("/category/{categoryId}")
+    @PostMapping
     public ResponseEntity<ProductResponse> createProduct(
-            @PathVariable Long categoryId,
             @RequestPart(name = "product_request") @Valid ProductRequest productRequest,
             @RequestPart(name = "image_files",required = true) List<MultipartFile> imageFiles
     ) {
         ProductResponse response = productService.toResponse(
-                productService.add(categoryId, productRequest, imageFiles)
+                productService.add( productRequest, imageFiles)
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -44,11 +43,6 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{productId}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
-        productService.delete(productId);
-        return ResponseEntity.noContent().build();
-    }
 
     @GetMapping("/{productId}")
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Long productId) {

@@ -12,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 
 @Entity
-@Table(name = "image")
+@Table(name = "images")
 public class Image {
 
     @Id
